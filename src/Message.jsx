@@ -1,29 +1,29 @@
-import { PureComponent } from 'react';
-import store from './redux/store';
+import { connect } from 'react-redux';
 import { delAction } from './redux/actions';
 
-export default class Message extends PureComponent {
-  state = {
-    msg: ''
-  }
-  subFunc = () => {
-    const globalState = store.getState();
-    this.setState({msg: globalState.msg});
-  }
-  componentDidMount() {
-    store.subscribe(this.subFunc)
-  }
-  del = () => {
-    store.dispatch( delAction() );
-  }
-  render() {
-    return (
-      <>
-        <p>
-          {this.state.msg}
-          <button onClick={this.del}>X</button>
-        </p>
-      </>
-    );
+function storeToProps(store) {
+  return {
+    msg: store.msg
   }
 }
+
+function dispatchToProps(dispatch) {
+  return {
+    del: () => dispatch( delAction() )
+  }
+}
+
+const connector = connect(storeToProps, dispatchToProps);
+
+function Message({del, msg}) {
+  return (
+    <>
+      <p>
+        {msg}
+        <button onClick={del}>X</button>
+      </p>
+    </>
+  );
+}
+
+export default connector(Message);

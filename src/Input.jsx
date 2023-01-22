@@ -1,23 +1,32 @@
-import { PureComponent } from 'react';
-import store from './redux/store';
+import { useState } from 'react';
+import { connect } from 'react-redux';
 import { addAction } from './redux/actions';
 
-export default class Input extends PureComponent {
-  state = {
-    value: ''
-  }
-  inputChange = (e) => {
-    this.setState({value: e.target.value});
-  }
-  buttonClick = () => {
-    store.dispatch( addAction(this.state.value) );
-  }
-  render() {
-    return (
-      <>
-        <input onChange={this.inputChange} />
-        <button onClick={this.buttonClick}>save</button>
-      </>
-    );
+function dispatchToProps(dispatch) {
+  return {
+    add: (data) => dispatch( addAction(data) )
   }
 }
+
+const connector = connect(null, dispatchToProps);
+
+function Input({add}) {
+  const [value, setValue] = useState('');
+  const inputChange = (e) => {
+    setValue(e.target.value);
+  }
+  return (
+    <>
+      <input onChange={inputChange} />
+      <button onClick={
+        () => {
+          add(value);
+        }
+      }>
+        save
+      </button>
+    </>
+  );
+}
+
+export default connector(Input);
